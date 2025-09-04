@@ -36,10 +36,14 @@ foreach (glob($csvDir . "/*.csv") as $file) {
         $stmt = $db->prepare("INSERT INTO `$tableName` (`" . implode("`, `", $columns) . "`) VALUES ($placeholders)");
 
         // insert rows
+        $db->beginTransaction();
+
         while (($row = fgetcsv($handle, 0, ",")) !== false) {
             $stmt->execute($row);
         }
-
+        
+        $db->commit();
+        
         fclose($handle);
         echo "Loaded: $tableName (" . count($columns) . " columns)\n";
     }
